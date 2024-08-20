@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>شبیه‌سازی حرکت پرتابی</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        canvas {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>شبیه‌سازی حرکت پرتابی</h1>
+    <canvas id="trajectoryChart" width="800" height="600"></canvas>
+    <script>
+        // پارامترهای آزمایش
+        const v0 = 20.0; // سرعت اولیه (متر بر ثانیه)
+        const theta = 45; // زاویه پرتاب (درجه)
+        const g = 9.81; // شتاب گرانش (متر بر ثانیه به توان 2)
+
+        // تبدیل زاویه به رادیان
+        const theta_rad = theta * Math.PI / 180;
+
+        // محاسبه زمان کل پرواز
+        const T = (2 * v0 * Math.sin(theta_rad)) / g;
+
+        // محاسبه دامنه پرتاب
+        const R = (v0 * v0 * Math.sin(2 * theta_rad)) / g;
+
+        // محاسبه ارتفاع ماکزیمم
+        const H = (v0 * v0 * Math.sin(theta_rad) * Math.sin(theta_rad)) / (2 * g);
+
+        // ایجاد آرایه زمانی
+        const num_points = 500;
+        const t = Array.from({ length: num_points + 1 }, (_, i) => i * T / num_points);
+
+        // محاسبه موقعیت افقی و عمودی
+        const x = t.map(time => v0 * time * Math.cos(theta_rad));
+        const y = t.map(time => v0 * time * Math.sin(theta_rad) - 0.5 * g * time * time);
+
+        // ترسیم نمودار
+        const ctx = document.getElementById('trajectoryChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: x,
+                datasets: [{
+                    label: 'مسیر حرکت پرتابی',
+                    data: y,
+                    borderColor: 'blue',
+                    borderWidth: 2,
+                    fill: false
+                }]
+            },
+            options: {
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'فاصله افقی (متر)'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'ارتفاع (متر)'
+                        }
+                    }
+                }
+            }
+        });
+
+        // چاپ نتایج
+        console.log(`زمان کل پرواز: ${T.toFixed(2)} ثانیه`);
+        console.log(`دامنه پرتاب: ${R.toFixed(2)} متر`);
+        console.log(`ارتفاع ماکزیمم: ${H.toFixed(2)} متر`);
+
+        // توضیحات متنی
+        console.log("\nتحلیل نتایج:");
+        console.log(`1. زمان کل پرواز: ${T.toFixed(2)} ثانیه.`);
+        console.log("   این زمان نشان می‌دهد که جسم برای طی کردن مسیر خود در هوا چه مدت زمانی نیاز دارد.");
+        console.log(`2. دامنه پرتاب: ${R.toFixed(2)} متر.`);
+        console.log("   این مقدار فاصله افقی است که جسم از نقطه پرتاب تا نقطه فرود طی می‌کند.");
+        console.log(`3. ارتفاع ماکزیمم: ${H.toFixed(2)} متر.`);
+        console.log("   این مقدار بالاترین نقطه‌ای است که جسم به آن می‌رسد قبل از اینکه به زمین بازگردد.");
+    </script>
+</body>
+</html>
